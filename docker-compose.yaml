@@ -1,0 +1,20 @@
+networks:
+  dbwebb:
+
+services:
+  server:
+    image: mobn23/scooters-system-server:1.0
+    container_name: "scootersystemserver"
+    ports:
+      - "1337:1337"
+    networks:
+      dbwebb:
+    restart:
+      "always"
+  client:
+    image: mobn23/scooters-system-client:1.0
+    container_name: "scootersystemclient"
+    networks:
+      dbwebb:
+    links:
+      - "server:scootersystemserver"

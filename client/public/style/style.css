@@ -1,0 +1,46 @@
+body {
+    margin: 8px auto;
+    background: #a3a3a3c5;
+    width: 700px;
+    font-family: monospace;
+    letter-spacing: 2px;
+}
+
+body p {
+    font-size: 2rem;
+}
+
+.main-title{
+    display: flex;
+    justify-content: center;
+}
+
+.nav {
+    display: flex;
+    justify-content: center;
+    background-color: rgb(22, 144, 251);
+    border: 3px solid#070707;
+    border-radius: 15px;
+    margin: auto;
+    transition: transform 0.4s ease;
+    margin-bottom: 20px;
+
+    a{
+        padding: 10px;
+        content: "\f009";
+        font-family: 'Font Awesome 5 Brands';
+        text-decoration: none;
+        color:black
+    }
+
+    :hover {
+        transform: scale(1.1);
+        color: #e1e1e1d7;
+    }
+}
+
+.footer{
+    a{
+        color: rgb(0, 0, 0);
+    }
+}
