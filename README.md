@@ -1,2 +1,2 @@
-# vteam_sparkcyckel
-Backend API for sparkcyckel system
+# Vteam_sparkcyckel
+Backend API för Svenska Elsparkcyklar AB
