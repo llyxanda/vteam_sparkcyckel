@@ -53,7 +53,7 @@ app.get('/oauth', async (req, res) => {
 });
 
 app.get('/google/callback', async (req, res) => {
-    console.log('req.query', req.query);
+    // console.log('req.query', req.query);
 
     const { code } = req.query;
     const data = {
@@ -64,7 +64,7 @@ app.get('/google/callback', async (req, res) => {
         grant_type: "authorization_code",
     };
 
-    console.log('data', data);
+    // console.log('data', data);
 
     const response = await fetch(GOOGLE_ACCESS_TOKEN_URL, {
         method: "POST",
@@ -72,12 +72,18 @@ app.get('/google/callback', async (req, res) => {
     });
 
     const accessTokenData = await response.json();
-    const { idToken } = accessTokenData;
+    // console.log('accessTokenData', accessTokenData);
+    const  idToken = accessTokenData.id_token;
 
-    console.log('idToken', idToken);
+    // console.log('--- idToken ---', idToken);
 
-    const tokenInfoResponse = await fetch(`${process.env.GOOGLE_TOKEN_INFO_URL}?id=${idToken}`);
-    res.status(tokenInfoResponse.status).json(await tokenInfoResponse.json());
+    // FIX: Google advises against calling the tokeninfo validation endpoint to validate a token in a production environment. Google recommends using a Google API client library for your platform, or a general-purpose JWT library. You can read https://developers.google.com/identity/sign-in/web/backend-auth#calling-the-tokeninfo-endpoint to learn more.
+    const tokenInfoResponse = await fetch(`${process.env.GOOGLE_TOKEN_INFO_URL}?id_token=${idToken}`);
+    const tokenInfo = await tokenInfoResponse.json();
+    console.log(tokenInfo);
+    // console.log('--- token info response ---', tokenInfoResponse);
+    // res.status(tokenInfoResponse.status).json(await tokenInfoResponse.json());
+    res.send(tokenInfo);
 
     // res.send('Google OAuth Callback URL.'); // For testing.
 });
