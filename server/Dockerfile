@@ -14,8 +14,8 @@ COPY routes ./routes
 
 COPY views ./views
 
-COPY index.js .
+COPY app.mjs .
 
-EXPOSE 1337
+EXPOSE 8585
 
-CMD ["node", "index.js"]
+CMD ["node", "app.mjs"]

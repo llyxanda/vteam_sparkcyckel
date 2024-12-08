@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google OAuth Front-End</title>
+</head>
+<body>
+    <h1>Google OAuth Demo</h1>
+    <button id="loginBtn">Login with Google</button>
+
+    <script>
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            // 1. Send a request to the backend to get the OAuth URL
+            try {
+                console.log('here');
+                const response = await fetch('http://localhost:8585/posts/oauth');
+                const data = await response.json();
+                console.log('data ', data);
+                if (data.oauthUrl) {
+                    // 2. Redirect to Google's OAuth consent screen
+                    console.log('data ', data);
+                    window.location.href = data.oauthUrl;
+                    console.log('redirected ');
+                }
+            } catch (error) {
+                console.error('Error while fetching OAuth URL:', error);
+            }
+        });
+    </script>
+</body>
+</html>

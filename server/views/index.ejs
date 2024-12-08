@@ -1,0 +1,9 @@
+<%- include('includes/header'); %>
+    <h1><%= title %></h1>
+    <ul>
+        <% routes.forEach(route => { %>
+            <li><strong><%= route.method %></strong> <%= route.path %> - <%= route.description %></li>
+        <% }) %>
+    </ul>
+
+<%- include('includes/footer'); %>
