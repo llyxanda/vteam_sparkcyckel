@@ -3,3 +3,4 @@
 # Ignore environment variable files
 .env
 github.txt
+index.html

@@ -6,7 +6,7 @@ services:
     image: mobn23/scooters-system-server:1.0
     container_name: "scootersystemserver"
     ports:
-      - "1337:1337"
+      - "8585:8585"
     networks:
       dbwebb:
     restart:
