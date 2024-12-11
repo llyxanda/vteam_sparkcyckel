@@ -3,7 +3,7 @@ networks:
 
 services:
   server:
-    image: mobn23/scooters-system-server:1.0
+    image: davidallert/scooterserver:1.0
     container_name: "scootersystemserver"
     ports:
       - "8585:8585"
