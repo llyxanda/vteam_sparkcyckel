@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "mocha --reporter spec",
-    "test:jest": "jest"
+    "test:jest": "jest",
+    "start": "nodemon app.mjs"
   },
   "jest": {
     "transform": {

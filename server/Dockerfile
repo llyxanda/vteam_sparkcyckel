@@ -4,18 +4,25 @@ WORKDIR /server
 
 RUN apt update && apt install -y iputils-ping
 
+COPY package*.json /server/
+
 RUN npm init -y
 
 RUN npm install express ejs
 
-COPY config ./config
+COPY . /server/
 
-COPY routes ./routes
+# COPY config ./config
 
-COPY views ./views
+# COPY routes ./routes
 
-COPY app.mjs .
+# COPY views ./views
+
+# COPY app.mjs .
 
 EXPOSE 8585
 
+# CMD ["bash"]
+
 CMD ["node", "app.mjs"]
+
