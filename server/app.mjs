@@ -13,7 +13,6 @@ import http from "http";
 import {loggingMiddleware, authMiddleware, attachUserMiddleware} from "./middlewares/authMiddleware.mjs"
 //import { initializeSockets } from './sockets/socketConfig.mjs';
 
-
 const app = express();
 const port = process.env.PORT || 8080;
 const httpServer = http.createServer(app);
@@ -24,8 +23,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-
 
 app.get("/", async (req, res) => {
   //await docs.deleteAll('documents');
@@ -52,12 +49,9 @@ const root = {
   userData: (args, context) => context.user ? `Authenticated user email: ${context.user.email}` : "No authenticated user"
 };
 
-
-
 //app.use(loggingMiddleware);
 //app.use(authMiddleware);
 //app.use(attachUserMiddleware);
-
 
 app.all("/graphql", createHandler({
   schema: schemaAuthmiddleware,
