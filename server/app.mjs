@@ -11,6 +11,7 @@ import posts from './routes/posts.mjs';
 import schemaAuth from './graphql/authtypes.mjs';
 import http from "http";
 import {loggingMiddleware, authMiddleware, attachUserMiddleware} from "./middlewares/authMiddleware.mjs"
+import setupWebSocketServer from './websockets/server.mjs';
 //import { initializeSockets } from './sockets/socketConfig.mjs';
 
 const app = express();
@@ -78,5 +79,8 @@ if (process.env.NODE_ENV !== 'test') {
 const server = httpServer.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
+
+// Set up the WebSocket server
+setupWebSocketServer(server);
 
 export default server;
