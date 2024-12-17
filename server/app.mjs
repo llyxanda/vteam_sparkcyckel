@@ -70,6 +70,7 @@ app.disable('x-powered-by');
 app.set("view engine", "ejs");
 
 app.use("/posts", posts);
+app.use("/test", testRouter)
 app.use('/graphql/auth', graphqlHTTP({
   schema: graphqlSchema,
   graphiql: true,
