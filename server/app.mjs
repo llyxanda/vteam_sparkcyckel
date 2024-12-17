@@ -8,6 +8,7 @@ import { graphqlHTTP } from 'express-graphql';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { buildSchema } from 'graphql';
 import posts from './routes/posts.mjs';
+import testRouter from './routes/test_router.mjs';
 import schemaAuth from './graphql/authtypes.mjs';
 import http from "http";
 import {loggingMiddleware, authMiddleware, attachUserMiddleware} from "./middlewares/authMiddleware.mjs"
@@ -67,6 +68,7 @@ app.disable('x-powered-by');
 app.set("view engine", "ejs");
 
 app.use("/posts", posts);
+app.use("/test", testRouter)
 app.use('/graphql/auth', graphqlHTTP({
   schema: schemaAuth,
   graphiql: true,
