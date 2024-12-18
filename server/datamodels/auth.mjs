@@ -92,7 +92,6 @@ const auth = {
             db = await database.getDb('users');
             const user = await db.collection.findOne({ email: email.toLowerCase() });
 
-
             if (!user) {
                 return {
                     errors: {

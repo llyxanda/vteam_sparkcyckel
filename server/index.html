@@ -13,20 +13,47 @@
         document.getElementById('loginBtn').addEventListener('click', async () => {
             // 1. Send a request to the backend to get the OAuth URL
             try {
-                console.log('here');
+                console.log('Requesting OAuth URL...');
                 const response = await fetch('http://localhost:8585/posts/oauth');
                 const data = await response.json();
-                console.log('data ', data);
+                console.log('Received data: ', data);
+
                 if (data.oauthUrl) {
                     // 2. Redirect to Google's OAuth consent screen
-                    console.log('data ', data);
+                    console.log('Redirecting to OAuth consent screen...');
                     window.location.href = data.oauthUrl;
-                    console.log('redirected ');
                 }
             } catch (error) {
                 console.error('Error while fetching OAuth URL:', error);
             }
         });
+
+        // This script could be used on the Google OAuth callback page if you want to retrieve
+        // the token directly and handle the user authentication in this HTML page.
+        // This would be executed after the user is redirected back from Google OAuth.
+        if (window.location.search.includes('code')) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const state = urlParams.get('state');
+            console.log('OAuth Code:', code);
+            console.log('OAuth State:', state);
+
+            // Fetch user information from the backend (after the OAuth flow)
+            fetch(`http://localhost:8585/posts/google/callback?code=${code}&state=${state}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Logged in user data:', data);
+                    // You can store the token and user information here for future use
+                    localStorage.setItem('user', data.user);
+                    localStorage.setItem('token', data.token);
+
+                    // Optionally, redirect the user to another page after successful login
+                    window.location.href = '/dashboard'; // Or any other route
+                })
+                .catch(error => {
+                    console.error('Error during OAuth callback:', error);
+                });
+        }
     </script>
 </body>
 </html>

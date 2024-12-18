@@ -53,11 +53,13 @@ router.get('/google/callback', async (req, res) => {
 
     const data = new URLSearchParams();
     data.append('code', code);
+    data.append('state', state);
     data.append('client_id', GOOGLE_CLIENT_ID);
     data.append('client_secret', GOOGLE_CLIENT_SECRET);
     data.append('redirect_uri', GOOGLE_CALLBACK_URL);
     data.append('grant_type', 'authorization_code');
     //console.log(data);
+
     try {
         // Exchange the authorization code for an access token
         const response = await fetch(GOOGLE_ACCESS_TOKEN_URL, {
@@ -90,26 +92,20 @@ router.get('/google/callback', async (req, res) => {
         console.log('user', userInfo);
         //console.log(result);
 
+        //Sara: Added Redirection to the frontend
+        //res.redirect(`http://localhost:3000/#/mapscooter?token=${id_token}`);
+        const redirectUrl = `http://localhost:3000/#/google/callback?user=${encodeURIComponent(userInfo.email)}&token=${encodeURIComponent(access_token)}`;
+        
+
         if (!result) {
-            const registerResult = await auth.register({email:email, password:'generatedTempPassword', admin:false});
+            const registerResult = await auth.register({ email: email, password: 'generatedTempPassword', admin: false });
             if (registerResult.errors) {
                 throw new Error('Failed to register user');
             }
-            return {
-                message: 'Registered user',
-                user: email,
-                token: access_token,
-            };
-        } else {
-            //console.log(access_token)
-            return {
-                message: 'Found user',
-                user: email,
-                token: access_token,
-            };
-            //console.log(result.email)
-            //res.status(200).json(result.data);
-        }
+        } 
+
+        // Redirect to the frontend with the required query parameters
+        res.redirect(redirectUrl);
     } catch (error) {
         console.error('Error during OAuth process:', error);
         res.status(500).send('OAuth process failed');
