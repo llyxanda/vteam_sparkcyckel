@@ -10,6 +10,7 @@ import { buildSchema } from 'graphql';
 import posts from './routes/posts.mjs';
 import testRouter from './routes/test_router.mjs';
 import schemaAuth from './graphql/authtypes.mjs';
+import scooterSchema from './graphql/scootertypes.mjs';
 import http from "http";
 import {loggingMiddleware, authMiddleware, attachUserMiddleware} from "./middlewares/authMiddleware.mjs"
 import setupWebSocketServer from './websockets/server.mjs';
@@ -34,10 +35,10 @@ app.get("/", async (req, res) => {
       { method: 'GET', path: '/', description: 'API Documentation' },
       { method: 'GET', path: '/posts/oauth', description: 'Oauth authorisation with google' },
       { method: 'GET', path: '/graphql/auth', description: 'Manual authorisation with graphql' },
+      { method: 'GET, POST', path: '/graphql/scooters', description: 'Scooter endpoint with graphql' },
     ]
   });
 });
-
 
 const schemaAuthmiddleware = buildSchema(`
   type Query {
@@ -68,9 +69,16 @@ app.disable('x-powered-by');
 app.set("view engine", "ejs");
 
 app.use("/posts", posts);
-app.use("/test", testRouter)
+app.use("/test", testRouter);
+
 app.use('/graphql/auth', graphqlHTTP({
   schema: schemaAuth,
+  graphiql: true,
+}));
+
+// FIX Not sure if the scooter endpoint should be defined separately like this?
+app.use('/graphql/scooters', graphqlHTTP({
+  schema: scooterSchema,
   graphiql: true,
 }));
 
@@ -78,11 +86,13 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('combined'));
 }
 
+// await database.connectMongoose();
+
 const server = httpServer.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
 
-// Set up the WebSocket server
+// Start the WebSocket server.
 setupWebSocketServer(server);
 
 export default server;
