@@ -1,7 +1,5 @@
-
 import { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList, GraphQLBoolean } from 'graphql';
 import auth from '../datamodels/auth.mjs';
-
 
 const UserType = new GraphQLObjectType({
     name: 'User',
@@ -18,8 +16,6 @@ const RegisterResponseType = new GraphQLObjectType({
         user: { type: UserType },
     },
 });
-
-
 
 const LoginResponseType = new GraphQLObjectType({
     name: 'LoginResponse',
@@ -53,7 +49,6 @@ const RootQueryType = new GraphQLObjectType({
         },
     },
 });
-
 
 const Mutation = new GraphQLObjectType({
     name: 'Mutation',
