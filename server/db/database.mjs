@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import mongoose from 'mongoose';
 
-
 //const uri = "mongodb+srv://alexandraberivoe:<db_password>@cluster0.aovbh.mongodb.net/
 //?retryWrites=true&w=majority&appName=Cluster0";
 
