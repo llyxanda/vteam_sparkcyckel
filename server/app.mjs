@@ -70,7 +70,8 @@ app.disable('x-powered-by');
 app.set("view engine", "ejs");
 
 app.use("/posts", posts);
-app.use("/test", testRouter)
+app.use("/test", testRouter);
+
 app.use('/graphql/auth', graphqlHTTP({
   schema: graphqlSchema,
   graphiql: true,
@@ -85,22 +86,22 @@ app.use('/graphql/users', graphqlHTTP({
   graphiql: false,
 }));
 
-
 app.use('/graphql/scooters', graphqlHTTP({
   schema: scooterSchema,
   graphiql: false,
 }));
 
-
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('combined'));
 }
+
+// await database.connectMongoose();
 
 const server = httpServer.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
 
-// Set up the WebSocket server
+// Start the WebSocket server.
 setupWebSocketServer(server);
 
 export default server;
