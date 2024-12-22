@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color:#141414">
+
+  <h1 style="color: #fff">Check the terminal + browser console.</h1>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        const randomDemoId = Math.ceil(Math.random() * 1000000)
+
+        const socket = io('http://localhost:8585', {
+            query: {
+                scooterId: randomDemoId, // The scooter's unique ID from the database.
+                isAdmin: true // True or false depending on who's connecting.
+            }
+        });
+
+        socket.on("connectionEstablished", (data) => {
+            console.log(data);
+        });
+
+    </script>
+
+
+  </body>
+</html>
