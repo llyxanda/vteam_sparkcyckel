@@ -4,7 +4,11 @@ const router = express.Router();
 router.use(express.json());
 
 router.get('/websockets', (req, res) => {
-    res.render('websockets_client_demo.ejs');
+    res.render('demos/websockets_client_demo.ejs');
+});
+
+router.get('/graphql', (req, res) => {
+    res.render('demos/graphql_client_demo.ejs');
 });
 
 export default router;
