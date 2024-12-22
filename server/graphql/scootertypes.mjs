@@ -10,8 +10,8 @@ const schemaComposer = new SchemaComposer();
 const ScooterTypeComposer = composeWithMongoose(Scooter);
 
 schemaComposer.Query.addFields({
-    scooterById: ScooterTypeComposer.getResolver('findById'),
-    scooterMany: ScooterTypeComposer.getResolver('findMany'),
+    scooter: ScooterTypeComposer.getResolver('findById'),
+    scooters: ScooterTypeComposer.getResolver('findMany'),
 });
 
 schemaComposer.Mutation.addFields({
