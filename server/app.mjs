@@ -35,7 +35,7 @@ app.get("/", async (req, res) => {
       { method: 'GET', path: '/', description: 'API Documentation' },
       { method: 'GET', path: '/posts/oauth', description: 'Oauth authorisation with google' },
       { method: 'GET', path: '/graphql/auth', description: 'Manual authorisation with graphql' },
-      { method: 'GET, POST', path: '/graphql/scooters', description: 'Scooter endpoint with graphql' },
+      { method: 'POST', path: '/graphql/scooters', description: 'Scooter endpoint with graphql' },
     ]
   });
 });
