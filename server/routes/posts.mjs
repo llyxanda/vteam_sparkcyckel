@@ -4,6 +4,8 @@ import 'dotenv/config';
 import crypto from 'crypto';
 import session from 'express-session';
 import auth from '../datamodels/auth.mjs'
+import users from '../datamodels/users.mjs'
+import jwt from "jsonwebtoken"
 
 const router = express.Router();
 router.use(express.json());
@@ -21,6 +23,7 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CALLBACK_URL = "http://localhost:8585/posts/google/callback";
 const GOOGLE_OAUTH_SCOPES = [
     "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/plus.login",
     "https://www.googleapis.com/auth/userinfo.profile",
 ];
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -35,7 +38,7 @@ router.get('/oauth', (req, res) => {
 
     const scopes = GOOGLE_OAUTH_SCOPES.join(" ");
     const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${GOOGLE_OAUTH_URL}?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_CALLBACK_URL}&access_type=offline&response_type=code&state=${state}&scope=${scopes}`;
-    
+
     //res.redirect(GOOGLE_OAUTH_CONSENT_SCREEN_URL);  // Redirect user to Google's OAuth consent screen
     res.json({ oauthUrl: GOOGLE_OAUTH_CONSENT_SCREEN_URL });
 });
@@ -88,23 +91,29 @@ router.get('/google/callback', async (req, res) => {
 
         const userInfo = await tokenInfoResponse.json();
         const email = userInfo.email;
-        const result = await auth.getdataByEmail(email);
+        const result = await users.getdataByEmail(email);
         console.log('user', userInfo);
         //console.log(result);
 
         //Sara: Added Redirection to the frontend
         //res.redirect(`http://localhost:3000/#/mapscooter?token=${id_token}`);
-        const redirectUrl = `http://localhost:3000/#/google/callback?user=${encodeURIComponent(userInfo.email)}&token=${encodeURIComponent(access_token)}`;
+        //const redirectUrl = `http://localhost:3000/#/google/callback?user=${encodeURIComponent(userInfo.email)}&token=${encodeURIComponent(access_token)}`;
         
+        // Generate a JWT token for the authenticated user
+        const token = jwt.sign(    {
+            email: userInfo.email,
+            admin: result ? result.admin || false : false
+        }, process.env.JWTSECRET, { expiresIn: '24h' });
+
+        // Redirect the user to the frontend with the token
+        const redirectUrl = `http://localhost:3000/#/google/callback?user=${encodeURIComponent(userInfo.email)}&token=${encodeURIComponent(token)}`;
 
         if (!result) {
-            const registerResult = await auth.register({ email: email, password: 'generatedTempPassword', admin: false });
+            const registerResult = await auth.register({ email: email, password: 'generatedTempPassword', admin: false, name:userInfo.given_name, surname: userInfo.family_name });
             if (registerResult.errors) {
                 throw new Error('Failed to register user');
             }
         } 
-
-        // Redirect to the frontend with the required query parameters
         res.redirect(redirectUrl);
     } catch (error) {
         console.error('Error during OAuth process:', error);

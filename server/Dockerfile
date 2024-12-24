@@ -25,4 +25,3 @@ EXPOSE 8585
 # CMD ["bash"]
 
 CMD ["node", "app.mjs"]
-
