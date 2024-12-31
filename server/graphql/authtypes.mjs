@@ -79,6 +79,7 @@ schemaComposer.Mutation.addFields({
         return {
           message: response.data.message,
           user: {
+            _id: response.data.user._id,
             email: response.data.user.user,
             admin: response.data.user.admin,
             amount: response.data.user.amount,

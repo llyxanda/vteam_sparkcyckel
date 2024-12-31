@@ -62,7 +62,7 @@ const auth = {
             return {
               data: {
                 message: "User successfully registered.",
-                user: { email: email },
+                user: { email: newUser.email.toLowerCase()},
               },
             };
           } catch (e) {
@@ -93,6 +93,7 @@ const auth = {
     
         try {
             const user = await UserModel.findOne({ email: email.toLowerCase() });
+            //console.log('user:', user)
     
             if (!user || user.admin !== admin) {
                 return {
@@ -118,7 +119,7 @@ const auth = {
             });
     
             if (result) {
-                let payload = { user: user.email, admin: user.admin };
+                let payload = {_id:user._id, user: user.email, admin: user.admin };
                 let jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
     
                 return {
