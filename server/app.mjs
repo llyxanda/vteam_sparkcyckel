@@ -11,6 +11,7 @@ import posts from './routes/posts.mjs';
 import testRouter from './routes/test_router.mjs';
 import schemaAuth from './graphql/authtypes.mjs';
 import scooterSchema from './graphql/scootertypes.mjs';
+import stationSchema from './graphql/stationtypes.mjs';
 import http from "http";
 import {loggingMiddleware, authMiddleware, attachUserMiddleware} from "./middlewares/authMiddleware.mjs"
 import setupWebSocketServer from './websockets/server.mjs';
@@ -76,9 +77,13 @@ app.use('/graphql/auth', graphqlHTTP({
   graphiql: true,
 }));
 
-// FIX Not sure if the scooter endpoint should be defined separately like this?
 app.use('/graphql/scooters', graphqlHTTP({
   schema: scooterSchema,
+  graphiql: true,
+}));
+
+app.use('/graphql/stations', graphqlHTTP({
+  schema: stationSchema,
   graphiql: true,
 }));
 
