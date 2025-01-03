@@ -6,7 +6,7 @@ import UserModel from '../datamodels/user.mjs';
 
 process.env.NODE_ENV = 'test';
 
-describe('User Non Admin GraphQL API', () => {
+describe('Users Non Admin GraphQL API', () => {
 
   let authToken;
   let registeredUser;
@@ -129,7 +129,7 @@ describe('User Non Admin GraphQL API', () => {
       .set('Accept', 'application/json')
       .set('Authorization', `Bearer ${authToken}`);  // Add the token in the Authorization header
     
-    console.log('user data', response.status, response.body)
+    //console.log('user data', response.status, response.body)
     expect(response.status).to.equal(200);
     expect(response.body.data.userDataByEmail.email).to.equal('testuser@example.com');
     });
@@ -193,7 +193,7 @@ describe('User Non Admin GraphQL API', () => {
       .send({ query })
       .set('Accept', 'application/json')
       .set('Authorization', `Bearer ${authToken}`);
-    console.log('Users', response.body)
+    //console.log('Users', response.body)
     expect(response.status).to.equal(200);
     expect(response.body.errors[0].message).to.include('Access denied');
   });
@@ -214,7 +214,7 @@ describe('User Non Admin GraphQL API', () => {
       .post('/graphql/users')
       .set('Authorization', `Bearer ${authToken}`)
       .send({ query: mutation });
-    console.log('update resp ', response.body, registeredUser)
+    //console.log('update resp ', response.body, registeredUser)
     expect(response.status).to.equal(200);
     expect(response.body.data.updateUserById.name).to.equal('Updated Admin User');
     expect(response.body.data.updateUserById.surname).to.equal('Updated');

@@ -5,12 +5,13 @@ import path from 'path';
 import morgan from 'morgan';
 import cors from 'cors';
 import { graphqlHTTP } from 'express-graphql';
-import { createHandler } from 'graphql-http/lib/use/express';
-import { buildSchema } from 'graphql';
+//import { createHandler } from 'graphql-http/lib/use/express';
+//import { buildSchema } from 'graphql';
 import posts from './routes/posts.mjs';
 //import schemaAuth from './graphql/authtypes.mjs';
 import graphqlSchema from './graphql/authtypes.mjs';
 import graphqlSchemaU from './graphql/usertypes.mjs';
+import scooterSchema from './graphql/scootertypes.mjs';
 import http from "http";
 import {loggingMiddleware, authMiddleware, attachUserMiddleware} from "./middlewares/authMiddleware.mjs"
 //import { initializeSockets } from './sockets/socketConfig.mjs';
@@ -35,6 +36,8 @@ app.get("/", async (req, res) => {
       { method: 'GET', path: '/', description: 'API Documentation' },
       { method: 'GET', path: '/posts/oauth', description: 'Oauth authorisation with google' },
       { method: 'GET', path: '/graphql/auth', description: 'Manual authorisation with graphql' },
+      { method: 'GET/POST', path: '/graphql/users', description: 'Users database graphql' },
+      { method: 'GET/POST', path: '/graphql/scooters', description: 'Scooters database graphql' },
     ]
   });
 });
@@ -77,6 +80,11 @@ app.use(attachUserMiddleware);
 
 app.use('/graphql/users', graphqlHTTP({
   schema: graphqlSchemaU,
+  graphiql: false,
+}));
+
+app.use('/graphql/scooters', graphqlHTTP({
+  schema: scooterSchema,
   graphiql: false,
 }));
 

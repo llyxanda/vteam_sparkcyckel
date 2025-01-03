@@ -4,6 +4,7 @@ import { GraphQLString} from 'graphql';
 import auth from '../datamodels/auth.mjs';
 import UserModel from '../datamodels/user.mjs';
 import database from '../db/database.mjs';
+import { name } from 'ejs';
 
 await database.connectMongoose();
 
@@ -82,7 +83,6 @@ schemaComposer.Mutation.addFields({
             _id: response.data.user._id,
             email: response.data.user.user,
             admin: response.data.user.admin,
-            amount: response.data.user.amount,
           },
           token: response.data.token,
         };
