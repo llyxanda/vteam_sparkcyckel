@@ -8,9 +8,9 @@ import { graphqlHTTP } from 'express-graphql';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { buildSchema } from 'graphql';
 import posts from './routes/posts.mjs';
-import testRouter from './routes/test_router.mjs';
-import schemaAuth from './graphql/authtypes.mjs';
-import scooterSchema from './graphql/scootertypes.mjs';
+//import schemaAuth from './graphql/authtypes.mjs';
+import graphqlSchema from './graphql/authtypes.mjs';
+import graphqlSchemaU from './graphql/usertypes.mjs';
 import http from "http";
 import {loggingMiddleware, authMiddleware, attachUserMiddleware} from "./middlewares/authMiddleware.mjs"
 import setupWebSocketServer from './websockets/server.mjs';
@@ -27,6 +27,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
 app.get("/", async (req, res) => {
   //await docs.deleteAll('documents');
   res.render('index', {
@@ -40,30 +41,28 @@ app.get("/", async (req, res) => {
   });
 });
 
-const schemaAuthmiddleware = buildSchema(`
-  type Query {
-    ip: String
-    userData: String
-  }
-`);
 
-const root = {
-  ip: (args, context) => context.ip,
-  userData: (args, context) => context.user ? `Authenticated user email: ${context.user.email}` : "No authenticated user"
-};
+//const schemaAuthmiddleware = buildSchema(`
+//  type Query {
+//    ip: String
+//    userData: String
+//  }
+//`);
 
-//app.use(loggingMiddleware);
-//app.use(authMiddleware);
-//app.use(attachUserMiddleware);
+//const root = {
+//  ip: (args, context) => context.ip,
+//  userData: (args, context) => context.user ? `Authenticated user email: ${context.user.email}` : "No authenticated user"
+//};
 
-app.all("/graphql", createHandler({
-  schema: schemaAuthmiddleware,
-  rootValue: root,
-  context: req => ({
-    ip: req.raw.ip,
-    user: req.raw.user
-  }),
-}));
+
+//app.all("/graphql", createHandler({
+//  schema: schemaAuthmiddleware,
+//  rootValue: root,
+//  context: req => ({
+//    ip: req.raw.ip,
+//    user: req.raw.user
+//  }),
+//}));
 
 app.disable('x-powered-by');
 app.set("view engine", "ejs");
@@ -72,14 +71,17 @@ app.use("/posts", posts);
 app.use("/test", testRouter);
 
 app.use('/graphql/auth', graphqlHTTP({
-  schema: schemaAuth,
+  schema: graphqlSchema,
   graphiql: true,
 }));
 
-// FIX Not sure if the scooter endpoint should be defined separately like this?
-app.use('/graphql/scooters', graphqlHTTP({
-  schema: scooterSchema,
-  graphiql: true,
+app.use(loggingMiddleware);
+app.use(authMiddleware);
+app.use(attachUserMiddleware);
+
+app.use('/graphql/users', graphqlHTTP({
+  schema: graphqlSchemaU,
+  graphiql: false,
 }));
 
 if (process.env.NODE_ENV !== 'test') {

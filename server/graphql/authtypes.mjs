@@ -1,108 +1,95 @@
-import { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList, GraphQLBoolean } from 'graphql';
+import { SchemaComposer } from 'graphql-compose';
+import { composeWithMongoose } from 'graphql-compose-mongoose';
+import { GraphQLString} from 'graphql';
 import auth from '../datamodels/auth.mjs';
+import UserModel from '../datamodels/user.mjs';
+import database from '../db/database.mjs';
 
-const UserType = new GraphQLObjectType({
-    name: 'User',
-    fields: {
-        email: { type: GraphQLString },
-        admin: { type: GraphQLBoolean },
-    },
-});
+await database.connectMongoose();
 
-const RegisterResponseType = new GraphQLObjectType({
+// Initialize SchemaComposer
+const schemaComposer = new SchemaComposer();
+const AuthUserTypeComposer = composeWithMongoose(UserModel, { name: 'AuthUser' });
+
+
+schemaComposer.createObjectTC({
     name: 'RegisterResponse',
     fields: {
-        message: { type: GraphQLString },
-        user: { type: UserType },
+      message: { type: GraphQLString },
+      user: { type: AuthUserTypeComposer.getType() },
     },
-});
-
-const LoginResponseType = new GraphQLObjectType({
+  });
+  
+  schemaComposer.createObjectTC({
     name: 'LoginResponse',
     fields: {
-        message: { type: GraphQLString },
-        user: { type: UserType },
-        token: { type: GraphQLString },
+      message: { type: GraphQLString },
+      user: { type: AuthUserTypeComposer.getType() },
+      token: { type: GraphQLString },
     },
-});
-
-const RootQueryType = new GraphQLObjectType({
-    name: 'RootQuery',
-    fields: {
-        usersData: {
-            type: new GraphQLList(UserType),
-            description: 'Fetch user data - email and token',
-            async resolve() {
-                const usersData = await auth.getAllUsers();
-                console.log(usersData)
-                return usersData;
-            },
-        },
-        userData: {
-            type: UserType,
-            description: 'Fetch user data for an user email',
-            args: { email: { type: GraphQLString } },
-            async resolve(_, args) {
-                const userData = await auth.getdataByEmail(args.email);
-                return userData;
-            },
-        },
+  });
+schemaComposer.Query.addFields({
+  getUserData: {
+    type: AuthUserTypeComposer.getType(),
+    resolve: () => {
+      return { email: 'user@example.com', admin: true, amount: 100 };
     },
+  },
 });
 
-const Mutation = new GraphQLObjectType({
-    name: 'Mutation',
-    fields: {
-        register: {
-            type: RegisterResponseType,
-            args: {
-                email: { type: GraphQLString },
-                password: { type: GraphQLString },
-                admin: {type: GraphQLBoolean},
-            },
-            resolve: async (_, { email, password, admin }) => {
-                const response = await auth.register({ email, password, admin });
-                if (response.errors) {
-                    return {
-                        message: response.errors.detail,
-                        user: null,
-                    };
-                }
-                return response.data;
-            },
-        },
-        login: {
-            type: LoginResponseType,
-            args: {
-                email: { type: GraphQLString },
-                password: { type: GraphQLString },
-            },
-            resolve: async (_, { email, password }) => {
-                const response = await auth.login({ email, password });
-                //console.log(response)
-
-                if (response.errors) {
-                    return {
-                        message: response.errors.detail || 'Login failed',
-                        user: null,
-                        token: null,
-                    };
-                }
-                if (response.data) {
-                    console.log('is tr', response)
-                    return {
-                        message: response.data.message,
-                        user: { email: response.data.user.user, admin: response.data.user.admin }, 
-                        token: response.data.token,
-                    };
-                }
-                console.log('here' , response)
-            },
-        },
+schemaComposer.Mutation.addFields({
+  register: {
+    type: 'RegisterResponse',
+    args: {
+      email: 'String',
+      password: 'String',
+      admin: 'Boolean',
+      name: 'String',
+      surname: 'String',
+      amount: 'Float',
     },
+    resolve: async (_, { email, password, admin = false, name, surname, amount = 0 }) => {
+      const response = await auth.register({ email, password, admin, name, surname, amount });
+      if (response.errors) {
+        return {
+          message: response.errors.detail,
+          user: null,
+        };
+      }
+      return response.data;
+    },
+  },
+  login: {
+    type: 'LoginResponse',
+    args: {
+      email: 'String',
+      password: 'String',
+      admin: 'Boolean',
+    },
+    resolve: async (_, { email, password, admin = false }) => {
+      const response = await auth.login({ email, password, admin });
+      if (response.errors) {
+        return {
+          message: response.errors.detail || 'Login failed',
+          user: null,
+          token: null,
+        };
+      }
+      if (response.data) {
+        return {
+          message: response.data.message,
+          user: {
+            _id: response.data.user._id,
+            email: response.data.user.user,
+            admin: response.data.user.admin,
+            amount: response.data.user.amount,
+          },
+          token: response.data.token,
+        };
+      }
+    },
+  },
 });
 
-export default new GraphQLSchema({
-    query: RootQueryType,
-    mutation: Mutation,
-});
+const graphqlSchema = schemaComposer.buildSchema();
+export default graphqlSchema;

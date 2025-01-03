@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import mongoose from 'mongoose';
 
+
 //const uri = "mongodb+srv://alexandraberivoe:<db_password>@cluster0.aovbh.mongodb.net/
 //?retryWrites=true&w=majority&appName=Cluster0";
 
@@ -30,7 +31,7 @@ const database = {
           db:db
       };
   },
-
+  
   connectMongoose: async function connectMongoose() {
     try {
       let dsn = `mongodb+srv://alexandraberivoe:${process.env.DB_PASS}@cluster0.aovbh.mongodb.net/test?retryWrites=true&w=majority`;

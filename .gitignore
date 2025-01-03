@@ -3,4 +3,6 @@
 # Ignore environment variable files
 .env
 github.txt
-index.html
+# index.html
+index.js
+graphql/xauthtypes.mjs
