@@ -119,7 +119,7 @@ const auth = {
             });
     
             if (result) {
-                let payload = {_id:user._id, user: user.email, admin: user.admin };
+                let payload = {_id:user._id, user: user.email, admin: user.admin};
                 let jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
     
                 return {

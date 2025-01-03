@@ -27,7 +27,7 @@ describe('Auth GraphQL API', async () => {
             .send({ query: mutation })
             .set('Accept', 'application/json');
         
-        console.log('response', response.body);
+        //console.log('response', response.body);
 
         expect(response.status).to.equal(200);
         expect(response.body.data.register).to.be.an('object');
@@ -52,7 +52,7 @@ describe('Auth GraphQL API', async () => {
             .send({ query: mutation })
             .set('Accept', 'application/json');
         
-        console.log('resp', response.body);
+        //console.log('resp', response.body);
 
         expect(response.status).to.equal(200);
         expect(response.body.data.login).to.be.an('object');
@@ -73,7 +73,7 @@ describe('Auth GraphQL API', async () => {
             .send({ query: mutation })
             .set('Accept', 'application/json');
         
-        console.log('response hereeee', response.body);
+        //console.log('response hereeee', response.body);
         expect(response.status).to.equal(200);
         expect(response.body.data.register.message).to.include('already exists');
     });
@@ -92,7 +92,7 @@ describe('Auth GraphQL API', async () => {
             .send({ query: mutation })
             .set('Accept', 'application/json');
         
-        console.log('resppp', response.body);
+        //console.log('resppp', response.body);
         expect(response.status).to.equal(200);
         expect(response.body.data.login.message).to.include("Password is incorrect");
         expect(response.body.data.login.token).to.equal(null);

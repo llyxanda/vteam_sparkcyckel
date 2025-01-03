@@ -6,7 +6,7 @@ import UserModel from '../datamodels/user.mjs';
 
 process.env.NODE_ENV = 'test';
 
-describe('User and Auth GraphQL API', () => {
+describe('Users GraphQL API', () => {
 
   let authToken;
   let registeredUser;
@@ -77,7 +77,7 @@ describe('User and Auth GraphQL API', () => {
     
     registeredUser = responseLogin.body.data.login.user;
     expect(responseLogin.status).to.equal(200);
-    console.log('login ', responseLogin.body.data);
+    //console.log('login ', responseLogin.body.data);
     expect(responseLogin.body.data.login.token).to.be.a('string');
 
     authToken = responseLogin.body.data.login.token;  // Store the token for use in further tests
@@ -108,7 +108,7 @@ describe('User and Auth GraphQL API', () => {
       .set('Authorization', `Bearer ${authToken}`);  // Add the token in the Authorization header
     
     expect(response.status).to.equal(200);
-    console.log(response.body.data.userDataByEmail)
+    //console.log(response.body.data.userDataByEmail)
     expect(response.body.data.userDataByEmail).to.be.an('object');
     expect(response.body.data.userDataByEmail.email).to.equal('testuser@example.com');
     expect(response.body.data.userDataByEmail.name).to.equal('Test');
@@ -152,7 +152,7 @@ describe('User and Auth GraphQL API', () => {
       .send({ query })
       .set('Accept', 'application/json')
       .set('Authorization', `Bearer ${authToken}`);
-    console.log('Users', response.body.data.usersData)
+    //console.log('Users', response.body.data.usersData)
     expect(response.status).to.equal(200);
     expect(response.body.data.usersData).to.be.an('array');
     expect(response.body.data.usersData.length).to.equal(2);
@@ -178,7 +178,7 @@ describe('User and Auth GraphQL API', () => {
       .post('/graphql/users')
       .set('Authorization', `Bearer ${authToken}`)
       .send({ query: mutation });
-    console.log('update resp ', response.body)
+    //console.log('update resp ', response.body)
     expect(response.status).to.equal(200);
     expect(response.body.data.updateUserById.name).to.equal('Updated Admin User');
     expect(response.body.data.updateUserById.surname).to.equal('Updated');

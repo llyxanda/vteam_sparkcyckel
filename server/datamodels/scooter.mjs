@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const scooterSchema = new mongoose.Schema({
+    customid: {type: String, required: true, unique: true},
     status: { 
         type: String,
         enum: ["active", "inactive"],

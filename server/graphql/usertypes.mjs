@@ -4,6 +4,7 @@ import users from '../datamodels/users.mjs';
 import UserModel from '../datamodels/user.mjs';
 import database from '../db/database.mjs';
 import bcrypt from 'bcryptjs';
+import isAdmin from '../utils.mjs';
 
 await database.connectMongoose();
 
@@ -11,13 +12,6 @@ await database.connectMongoose();
 const schemaComposer = new SchemaComposer();
 const UserTypeComposer = composeWithMongoose(UserModel, { name: 'User' });
 
-// Helper function to check if the user is an admin
-const isAdmin = (context) => {
-  if (!context.user || !context.user.admin) {
-    throw new Error('Access denied: Admin only');
-  }
-  return true;
-};
 
 
 schemaComposer.Query.addFields({
@@ -50,7 +44,6 @@ schemaComposer.Query.addFields({
     args: { email: 'String' },
     resolve: async (_, { email }, context) => {
       if (context.user.admin || context.user.user === email) {
-        console.log('hereeeee  ', context.user.admin, context.user, email )
         const userData = await users.getdataByEmail(email);
         if (!userData) {
           throw new Error('User not found');
