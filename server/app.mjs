@@ -14,7 +14,6 @@ import graphqlSchemaU from './graphql/usertypes.mjs';
 import scooterSchema from './graphql/scootertypes.mjs';
 import http from "http";
 import {loggingMiddleware, authMiddleware, attachUserMiddleware} from "./middlewares/authMiddleware.mjs"
-import setupWebSocketServer from './websockets/server.mjs';
 //import { initializeSockets } from './sockets/socketConfig.mjs';
 
 const app = express();
@@ -70,8 +69,6 @@ app.disable('x-powered-by');
 app.set("view engine", "ejs");
 
 app.use("/posts", posts);
-app.use("/test", testRouter);
-
 app.use('/graphql/auth', graphqlHTTP({
   schema: graphqlSchema,
   graphiql: true,
@@ -95,13 +92,8 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('combined'));
 }
 
-// await database.connectMongoose();
-
 const server = httpServer.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
-
-// Start the WebSocket server.
-setupWebSocketServer(server);
 
 export default server;
