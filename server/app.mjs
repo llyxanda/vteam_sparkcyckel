@@ -14,13 +14,13 @@ import graphqlSchemaU from './graphql/usertypes.mjs';
 import scooterSchema from './graphql/scootertypes.mjs';
 import http from "http";
 import {loggingMiddleware, authMiddleware, attachUserMiddleware} from "./middlewares/authMiddleware.mjs"
-//import { initializeSockets } from './sockets/socketConfig.mjs';
+import { initializeSockets } from './websockets/socketConfig.mjs';
 
 const app = express();
 const port = process.env.PORT || 8080;
 const httpServer = http.createServer(app);
 
-//initializeSockets(httpServer); 
+initializeSockets(httpServer); 
 app.use(express.static(path.join(process.cwd(), "public")));
 app.use(cors());
 app.use(bodyParser.json());
