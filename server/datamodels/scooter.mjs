@@ -17,7 +17,8 @@ const scooterSchema = new mongoose.Schema({
     // TODO decide which types should be required.
     current_location: { // Using GeoJSON format.
         type: {
-            type: String
+            type: String,
+            enum: ["Point"] // Make sure the location is of type Point.
         },
         coordinates: {
             type: [Number] // The order must be: [Longitude, Latitude].
