@@ -67,6 +67,7 @@ export const initializeSockets = (httpServer) => {
         });
         await currentTrips[scooterId].save();
         console.log(`Trip started and logged for scooter ${scooterId}`);
+        io.emit("scooterJoined", { scooterId, email, current_location });
       } catch (err) {
         console.error("Error updating scooter status or log:", err);
       }
