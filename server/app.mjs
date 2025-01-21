@@ -12,6 +12,7 @@ import posts from './routes/posts.mjs';
 import graphqlSchema from './graphql/authtypes.mjs';
 import graphqlSchemaU from './graphql/usertypes.mjs';
 import scooterSchema from './graphql/scootertypes.mjs';
+import tripSchema from './graphql/triptypes.mjs';
 import http from "http";
 import {loggingMiddleware, authMiddleware, attachUserMiddleware} from "./middlewares/authMiddleware.mjs"
 import { initializeSockets } from './websockets/socketConfig.mjs';
@@ -38,6 +39,7 @@ app.get("/", async (req, res) => {
       { method: 'GET', path: '/graphql/auth', description: 'Manual authorisation with graphql' },
       { method: 'GET/POST', path: '/graphql/users', description: 'Users database graphql' },
       { method: 'GET/POST', path: '/graphql/scooters', description: 'Scooters database graphql' },
+      { method: 'GET/POST', path: '/graphql/trips', description: 'Trips database graphql' },
     ]
   });
 });
@@ -85,6 +87,11 @@ app.use('/graphql/users', graphqlHTTP({
 
 app.use('/graphql/scooters', graphqlHTTP({
   schema: scooterSchema,
+  graphiql: false,
+}));
+
+app.use('/graphql/trips', graphqlHTTP({
+  schema: tripSchema,
   graphiql: false,
 }));
 
