@@ -131,7 +131,7 @@ describe('Scooter non admin GraphQL API', () => {
       mutation {
         scooterCreateOne(record: {
           customid:"id00003",
-          status: active,
+          status: "active",
           speed: 25,
           battery_level: 90,
           current_location: {

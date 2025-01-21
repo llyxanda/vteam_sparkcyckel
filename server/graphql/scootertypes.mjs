@@ -1,7 +1,6 @@
 import { composeWithMongoose } from 'graphql-compose-mongoose';
 import { SchemaComposer } from 'graphql-compose';
 import Scooter from '../datamodels/scooter.mjs';
-import database from '../db/database.mjs';
 import isAdmin from '../utils.mjs';
 //await database.connectMongoose();
 
@@ -13,14 +12,19 @@ const ScooterTypeComposer = composeWithMongoose(Scooter);
 const ScooterUpdateInput = schemaComposer.createInputTC({
     name: 'ScooterUpdateInput',
     fields: {
-      customid: 'String',
-      status: 'String',
-      speed: 'Float',
-      battery_level: 'Float',
-      at_station: 'String',
-      designated_parking: 'Boolean',
+        customid: 'String',
+        status: 'String',
+        speed: 'Float',
+        battery_level: 'Float',
+        at_station: 'String',
+        designated_parking: 'Boolean',
+        current_location: {
+            type: 'JSON', // GeoJSON object for the location
+            description: 'The current location of the scooter as a GeoJSON object with type and coordinates',
+        },
     },
-  });
+});
+
   
 
 // Add queries
@@ -106,13 +110,23 @@ schemaComposer.Mutation.addFields({
             record: ScooterUpdateInput,
         },
         resolve: async (_, { customid, record }, context) => {
-            isAdmin(context);
-            const scooter = await Scooter.findOneAndUpdate(
-                { customid },
-                { $set: record },
-                { new: true }
-            );
-            return scooter;
+            isAdmin(context); // Authorization check
+            try {
+                const scooter = await Scooter.findOneAndUpdate(
+                    { customid },
+                    { $set: record },
+                    { new: true } // Return the updated document
+                );
+                if (scooter) {
+                    console.log(`Scooter ${customid} updated:`, scooter);
+                    return scooter;
+                } else {
+                    console.log(`Scooter ${customid} not found`);
+                }
+            } catch (error) {
+                console.error(`Error updating scooter ${customid}:`, error);
+                throw new Error(`Failed to update scooter: ${error.message}`);
+            }
         },
     },
     scooterDeleteById: {

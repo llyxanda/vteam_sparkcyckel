@@ -152,7 +152,7 @@ describe('Scooter GraphQL API', () => {
       mutation {
         scooterCreateOne(record: {
           customid:"id00003",
-          status: active,
+          status: "active",
           speed: 25,
           battery_level: 90,
           current_location: {
@@ -230,5 +230,63 @@ describe('Scooter GraphQL API', () => {
     expect(response.status).to.equal(200);
     expect(response.body.data.scooterDeleteById).to.equal(true);
   });
+  it('should update a scooter location by custom id (admin only)', async () => {
+    const mutation = `
+      mutation {
+        scooterUpdateById(customid: "id00001", record: {
+          current_location: {
+            type: "Point",
+            coordinates: [-3.856080, 0.848450]
+          }
+        }) {
+          _id
+          customid
+          current_location {
+            type
+            coordinates
+          }
+        }
+      }
+    `;
+  
+    const response = await request(server)
+      .post('/graphql/scooters')
+      .send({ query: mutation })
+      .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${authToken}`);
+    
+    expect(response.status).to.equal(200);
+    expect(response.body.data.scooterUpdateById).to.be.an('object');
+    expect(response.body.data.scooterUpdateById.current_location).to.deep.equal({
+      type: 'Point',
+      coordinates: [-3.856080, 0.848450],
+    });
+  
+    // Fetch the scooter to verify location update
+    const query = `
+      query {
+        scooters {
+          _id
+          customid
+          current_location {
+            type
+            coordinates
+          }
+        }
+      }
+    `;
+    
+    const fetchResponse = await request(server)
+      .post('/graphql/scooters')
+      .send({ query })
+      .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${authToken}`);
+    
+    expect(fetchResponse.status).to.equal(200);
+    const updatedScooter = fetchResponse.body.data.scooters.find(scooter => scooter.customid === 'id00001');
+    expect(updatedScooter).to.not.be.undefined;
+    expect(updatedScooter.current_location.coordinates).to.deep.equal([-3.856080, 0.848450]);
+  });
+  
 
 });
