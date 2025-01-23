@@ -6,6 +6,10 @@ const stationSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  city: {
+    type: String,
+    required: true
+  },
   charging_station: {
     type: Boolean,
     required: true,
@@ -18,7 +22,7 @@ const stationSchema = new mongoose.Schema({
   location:  { 
     type: {
     type: String,
-    enum: ["Point"] // Make sure the location is of type Point.
+    enum: ["Point"]
 },
 coordinates: {
     type: [Number] // The order must be: [Longitude, Latitude].
