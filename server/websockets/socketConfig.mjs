@@ -3,7 +3,6 @@ import scooter from "../datamodels/scooter.mjs";
 import Trip from "../datamodels/trip.mjs";
 import Stations from "../datamodels/stations.mjs";
 import { getDistance } from 'geolib';
-import Scooter from "../datamodels/scooter.mjs";
 
 let movingTimeouts = {};
 let currentTrips = {};
@@ -171,7 +170,8 @@ export const initializeSockets = (httpServer) => {
         }
     
         // Calculate total cost
-        const cost = startAmount + parkAmount + duration * 0.00001;
+        const cost = startAmount + parkAmount + duration * 0.01;
+        console.log('Cost', cost);
         trip.cost=cost
     
         // Save trip and update scooter status
