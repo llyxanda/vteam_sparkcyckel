@@ -1,0 +1,50 @@
+---
+tools:
+    javascript:
+        eslint: true
+    # Set to true if using external tools for code coverage.
+    external_code_coverage: false
+
+filter:
+    paths:
+        # Specify directories that Scrutinizer will analyze.
+        - datamodels/
+        - db/
+        - graphql/
+        - routes/
+        - test/
+    excluded_paths:
+        - node_modules/
+
+checks:
+    javascript:
+        security_review: true  # Checks for potential security vulnerabilities.
+        duplicated_code: true  # Warns about duplicate code.
+
+build:
+    nodes:
+        analysis:
+            # Environment for the analysis
+            environment:
+                node: "20"  # Define the Node.js version
+                npm: true  # Enables npm support
+            tests:
+                override:
+                    - npm run test
+                    - npm run test:jest
+                    # - eslint .
+            dependencies:
+                pre:
+                    - npm install
+
+tests:
+    coverage:
+        file: coverage/lcov.info  # Location of the coverage file.
+
+coding_style:
+    javascript:
+        spaces:
+            # Adjust indentation rules
+            indentation: 4  # Number of spaces for indentation
+        line_endings: "\n"  # Enforce UNIX line endings
+        max_line_length: 120  # Max line length per coding style

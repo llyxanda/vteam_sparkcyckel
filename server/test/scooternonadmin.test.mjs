@@ -65,7 +65,6 @@ describe('Scooter non admin GraphQL API', () => {
     const scooterData1 = {
       customid:"id00001",
       status: "active",
-      speed: 20,
       battery_level: 75,
       current_location: {
         type: "Point",
@@ -78,7 +77,6 @@ describe('Scooter non admin GraphQL API', () => {
     const scooterData2 = {
       customid:"id00002",
       status: "inactive",
-      speed: 15,
       battery_level: 50,
       current_location: {
         type: "Point",
@@ -105,7 +103,6 @@ describe('Scooter non admin GraphQL API', () => {
         scooters {
           _id
           status
-          speed
           battery_level
           current_location {
             type
@@ -132,7 +129,6 @@ describe('Scooter non admin GraphQL API', () => {
         scooterCreateOne(record: {
           customid:"id00003",
           status: "active",
-          speed: 25,
           battery_level: 90,
           current_location: {
             type: Point,
@@ -144,7 +140,6 @@ describe('Scooter non admin GraphQL API', () => {
           _id
           customid
           status
-          speed
           battery_level
           current_location {
             type
@@ -169,12 +164,10 @@ describe('Scooter non admin GraphQL API', () => {
     const mutation = `
       mutation {
         scooterUpdateById(customid: "id00001", record: {
-          speed: 30,
           battery_level: 85
         }) {
           _id
           customid
-          speed
           battery_level
         }
       }

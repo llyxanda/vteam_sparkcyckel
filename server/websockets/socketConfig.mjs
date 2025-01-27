@@ -3,7 +3,6 @@ import scooter from "../datamodels/scooter.mjs";
 import Trip from "../datamodels/trip.mjs";
 import Stations from "../datamodels/stations.mjs";
 import { getDistance } from 'geolib';
-import Scooter from "../datamodels/scooter.mjs";
 
 let movingTimeouts = {};
 let currentTrips = {};
@@ -43,7 +42,8 @@ export const initializeSockets = (httpServer) => {
       try {
         socket.join(scooterId);
         console.log(`User ${socket.id} (Email: ${email}) joined scooter ${scooterId}`);
-        const scooter = await updateScooter(scooterId, { status: "active" });
+        const status = "active" 
+        const scooter = await updateScooter(scooterId, { status: status });
         console.log(scooter)
         if (scooter.designated_parking==false) {
           startAmount = startAmount * 0.5
@@ -67,7 +67,8 @@ export const initializeSockets = (httpServer) => {
         });
         await currentTrips[scooterId].save();
         console.log(`Trip started and logged for scooter ${scooterId}`);
-        io.emit("scooterJoined", { scooterId, email, current_location });
+        io.emit("scooterJoined", { scooterId, email, current_location});
+        io.emit("statusChange", { scooterId, status});
       } catch (err) {
         console.error("Error updating scooter status or log:", err);
       }
@@ -81,7 +82,7 @@ export const initializeSockets = (httpServer) => {
         updateScooter(scooterId, updateData);
       }, 3000);
 
-      socket.to(scooterId).emit("receivemovingLocation", current_location);
+      io.emit("receivemovingLocation", {scooterId, current_location});
     };
 
     socket.on("moving", ({ scooterId, current_location, email }) => {
@@ -101,11 +102,19 @@ export const initializeSockets = (httpServer) => {
       }
     });
 
+    socket.on("charging", ({ scooterId }) => {
+      console.log(`Scooter ${scooterId} is charging`);
+      const status = 'charging';
+      updateScooter(scooterId, {status: status});
+      io.emit("statusChange", { scooterId, status});
+
+    });
+
     socket.on("batterychange", ({ scooterId, battery }) => {
       console.log(`Scooter ${scooterId} battery updated to: ${battery}`);
       updateScooter(scooterId, {battery_level:battery});;
 
-      socket.to(scooterId).emit("receivechangingbattery", battery);
+      io.emit("receivechangingbattery", {scooterId, battery});
     });
 
     socket.on("endTrip", async ({ scooterId, current_location, avg_speed }) => {
@@ -161,20 +170,23 @@ export const initializeSockets = (httpServer) => {
         }
     
         // Calculate total cost
-        const cost = startAmount + parkAmount + duration * 0.00001;
+        const cost = startAmount + parkAmount + duration * 0.01;
+        console.log('Cost', cost);
         trip.cost=cost
     
         // Save trip and update scooter status
         await trip.save();
         delete currentTrips[scooterId]; // Clean up after trip ends
+        const status = 'inactive';
     
         await updateScooter(scooterId, {
-          status: "inactive",
+          status: status,
           current_location: locationData,
           at_station: nearestStation ? nearestStation._id : null,
           designated_parking: Boolean(nearestStation),
         });
-        socket.emit("tripEnded", { scooterId, cost });
+        socket.emit("tripEnded", { scooterId, cost});
+        io.emit("statusChange", { scooterId, status});
         console.log(`Trip ended and logged for scooter ${scooterId}`);
       } catch (err) {
         console.error("Error ending trip:", err);

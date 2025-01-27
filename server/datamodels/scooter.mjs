@@ -6,10 +6,10 @@ const scooterSchema = new mongoose.Schema({
         type: String,
         required: true 
     },
-    speed: {
-        type: Number,
-        required: true
-    },
+    //speed: {
+    //    type: Number,
+    //    required: true
+    //},
     battery_level: {
         type: Number,
         required: true
