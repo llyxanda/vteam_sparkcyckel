@@ -30,7 +30,7 @@ const updateScooter = async (scooterId, updateData) => {
 export const initializeSockets = (httpServer) => {
   const io = new Server(httpServer, {
     cors: {
-      origin: ["http://localhost:3000", "http://localhost:8080", "https://www.student.bth.se"],
+      origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:8080", "https://www.student.bth.se"],
       methods: ["GET", "POST"],
     },
   });
@@ -38,37 +38,13 @@ export const initializeSockets = (httpServer) => {
   io.on("connection", (socket) => {
     console.log("A scooter connected:", socket.id);
 
-    socket.on("joinScooter", async ({ scooterId, email, current_location }) => {
+    socket.on("joinScooter", async ({ scooterId, email, battery_level, current_location }) => {
       try {
         socket.join(scooterId);
         console.log(`User ${socket.id} (Email: ${email}) joined scooter ${scooterId}`);
-        const status = "active" 
-        const scooter = await updateScooter(scooterId, { status: status });
-        console.log(scooter)
-        if (scooter.designated_parking==false) {
-          startAmount = startAmount * 0.5
-        }
 
-        // Start a new trip
-        const startLocation = {
-          type: "Point",
-          coordinates: [current_location.lon, current_location.lat],
-        };
-        const startTime = new Date();
-
-        currentTrips[scooterId] = new Trip({
-          scooterId,
-          email,
-          startLocation,
-          startTime,
-          endLocation: null,
-          endTime: null,
-          duration: null,
-        });
-        await currentTrips[scooterId].save();
-        console.log(`Trip started and logged for scooter ${scooterId}`);
         io.emit("scooterJoined", { scooterId, email, current_location});
-        io.emit("statusChange", { scooterId, status});
+
       } catch (err) {
         console.error("Error updating scooter status or log:", err);
       }
@@ -85,7 +61,36 @@ export const initializeSockets = (httpServer) => {
       io.emit("receivemovingLocation", {scooterId, current_location});
     };
 
-    socket.on("moving", ({ scooterId, current_location, email }) => {
+    socket.on("moving", async ({ scooterId, current_location, email }) => {
+      const status = "active" 
+      const scooter = await updateScooter(scooterId, { status: status });
+      console.log(scooter)
+
+      
+      if (scooter.designated_parking==false) {
+        startAmount = startAmount * 0.5
+      }
+
+      // Start a new trip
+      const startLocation = {
+        type: "Point",
+        coordinates: [current_location.lon, current_location.lat],
+      };
+      const startTime = new Date();
+
+      currentTrips[scooterId] = new Trip({
+        scooterId,
+        email,
+        startLocation,
+        startTime,
+        endLocation: null,
+        endTime: null,
+        duration: null,
+      });
+      await currentTrips[scooterId].save();
+      console.log(`Trip started and logged for scooter ${scooterId}`);
+      io.emit("statusChange", { scooterId, status});
+
       handleMovement({
         scooterId,
         current_location,
@@ -185,7 +190,7 @@ export const initializeSockets = (httpServer) => {
           at_station: nearestStation ? nearestStation._id : null,
           designated_parking: Boolean(nearestStation),
         });
-        socket.emit("tripEnded", { scooterId, cost});
+        io.emit("tripEnded", { scooterId, cost});
         io.emit("statusChange", { scooterId, status});
         console.log(`Trip ended and logged for scooter ${scooterId}`);
       } catch (err) {
