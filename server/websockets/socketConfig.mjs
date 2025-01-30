@@ -43,7 +43,7 @@ export const initializeSockets = (httpServer) => {
         socket.join(scooterId);
         console.log(`User ${socket.id} (Email: ${email}) joined scooter ${scooterId}`);
 
-        io.emit("scooterJoined", { scooterId, email, current_location});
+        io.emit("scooterJoined", { scooterId, email, battery_level, current_location});
 
       } catch (err) {
         console.error("Error updating scooter status or log:", err);
