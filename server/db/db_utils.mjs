@@ -57,8 +57,8 @@ const dbUtils = {
             {
                 name: "Malmö Central",
                 coordinates: [
-                    13.0038,
-                    55.609
+                    13.0038, // Longitude.
+                    55.609 // Latitude.
                 ],
             },
         ];
@@ -72,13 +72,18 @@ const dbUtils = {
                         cityIndex++;
                         cityThreshold += Math.floor((customIdList.length / 3));
                     }
+                    let lon = stations[cityIndex].coordinates[0] + ((Math.random() * 2 - 1) * 0.0001);
+                    let lat = stations[cityIndex].coordinates[1] + ((Math.random() * 2 - 1) * 0.0001);
                     document = {
                         customid: customId,
                         status: 'inactive',
                         battery_level: 100,
                         current_location: {
                             type: "Point",
-                            coordinates: stations[cityIndex].coordinates,
+                            coordinates: [
+                                lon,
+                                lat
+                            ],
                         },
                         at_station: stations[cityIndex].name,
                         designated_parking: true,
@@ -105,7 +110,8 @@ const dbUtils = {
         if (documents.length > 0) {
             try {
                 await database.connectMongoose();
-                // await Scooter.insertMany(documents);
+                await Scooter.deleteMany({}); // Remove existing scooters.
+                await Scooter.insertMany(documents);
                 console.log(documents);
                 console.log(`${documents.length} scooters were added to the database.`);
             } catch (error) {
@@ -117,6 +123,6 @@ const dbUtils = {
     }
 }
 
-await dbUtils.insertScooterDocuments(10, 7);
+await dbUtils.insertScooterDocuments(3000, 7);
 
 export default dbUtils;
