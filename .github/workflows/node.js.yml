@@ -11,12 +11,11 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
+        mongodb-version: [6.0, 7.0]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -32,7 +31,7 @@ jobs:
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
 
-    - run: npn install
+    - run: npm install
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
