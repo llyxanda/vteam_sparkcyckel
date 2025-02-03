@@ -14,14 +14,14 @@ const stations = [
   { name: 'Kungsholmen Hub', city: 'Stockholm', charging_station: true, no_of_scooters_max: 20, location: { type: 'Point', coordinates: [18.0359, 59.3326] } },
   
   // Göteborg
-  { name: 'Göteborg Central', city: 'Göteborg', charging_station: true, no_of_scooters_max: 18, location: { type: 'Point', coordinates: [11.9733, 57.7089] } },
-  { name: 'Linnéplatsen Station', city: 'Göteborg', charging_station: false, no_of_scooters_max: 12, location: { type: 'Point', coordinates: [11.9497, 57.6933] } },
-  { name: 'Hisingen Hub', city: 'Göteborg', charging_station: true, no_of_scooters_max: 22, location: { type: 'Point', coordinates: [11.9379, 57.7274] } },
+  { name: 'Göteborg Central', city: 'Göteborg', charging_station: true, no_of_scooters_max: 518, location: { type: 'Point', coordinates: [11.9733, 57.7089] } },
+  { name: 'Linnéplatsen Station', city: 'Göteborg', charging_station: false, no_of_scooters_max: 412, location: { type: 'Point', coordinates: [11.9497, 57.6933] } },
+  { name: 'Hisingen Hub', city: 'Göteborg', charging_station: true, no_of_scooters_max: 522, location: { type: 'Point', coordinates: [11.9379, 57.7274] } },
   
   // Malmö
-  { name: 'Malmö Central', city: 'Malmö', charging_station: true, no_of_scooters_max: 16, location: { type: 'Point', coordinates: [13.0038, 55.6090] } },
-  { name: 'Västra Hamnen Station', city: 'Malmö', charging_station: false, no_of_scooters_max: 11, location: { type: 'Point', coordinates: [12.9852, 55.6156] } },
-  { name: 'Triangeln Hub', city: 'Malmö', charging_station: true, no_of_scooters_max: 19, location: { type: 'Point', coordinates: [13.0031, 55.5954] } },
+  { name: 'Malmö Central', city: 'Malmö', charging_station: true, no_of_scooters_max: 160, location: { type: 'Point', coordinates: [13.0038, 55.6090] } },
+  { name: 'Västra Hamnen Station', city: 'Malmö', charging_station: false, no_of_scooters_max: 511, location: { type: 'Point', coordinates: [12.9852, 55.6156] } },
+  { name: 'Triangeln Hub', city: 'Malmö', charging_station: true, no_of_scooters_max: 419, location: { type: 'Point', coordinates: [13.0031, 55.5954] } },
 ];
 async function insertStations() {
   try {

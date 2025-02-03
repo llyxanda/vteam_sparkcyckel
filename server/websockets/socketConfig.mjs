@@ -3,7 +3,6 @@ import scooter from "../datamodels/scooter.mjs";
 import Trip from "../datamodels/trip.mjs";
 import Stations from "../datamodels/stations.mjs";
 import { getDistance } from 'geolib';
-import Scooter from "../datamodels/scooter.mjs";
 
 let movingTimeouts = {};
 let currentTrips = {};
@@ -12,16 +11,17 @@ let parkAmount = 10;
 
 const updateScooter = async (scooterId, updateData) => {
   try {
+    console.log('updating scooter', scooterId, updateData)
     const response = await scooter.findOneAndUpdate(
-      { customid: scooterId },
+      { customid: String(scooterId) },
       { $set: updateData },
       { new: true }
     );
     if (response) {
-      //console.log(`Scooter ${scooterId} updated:`, response);
+      console.log(`Scooter ${scooterId} updated:`, updateData);
       return response
     } else {
-      console.log(`Scooter ${scooterId} not found`);
+      console.log(`Scooter ${scooterId} not found ${response}`);
     }
   } catch (error) {
     console.error(`Error updating scooter ${scooterId}:`, error);
@@ -37,48 +37,52 @@ export const initializeSockets = (httpServer) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("A scooter connected:", socket.id);
+    console.log("A user/scooter connected:", socket.id);
 
-    socket.on("joinScooter", async ({ scooterId, email, battery_level, current_location}) => {
+    socket.on("joinScooter", async (data) => {
       try {
-        socket.join(scooterId);
-        console.log(`User ${socket.id} (Email: ${email}) joined scooter ${scooterId}`);
+        socket.join(data.scooterId);
+        if (data.type === "user") {
+          console.log("A user connected:", socket.id, data.scooterId, data.email);
+ 
+          const {type,  scooterId, email, battery_level, current_location} = data;
+          io.emit("scooterJoined", { scooterId, email, battery_level, current_location});
+          const currentstatus = await scooter.findOne({ customid: scooterId });
+          console.log("current status ", currentstatus.status)
+          const status = "active"
 
-        io.emit("scooterJoined", { scooterId, email, battery_level, current_location});
-        const currentstatus = await scooter.findOne({ customid: scooterId });
-        console.log("current status ", currentstatus.status)
-        const status = "active"
-
-        if (currentstatus.status = "inactive") {
-          const scooter = await updateScooter(scooterId, { status: status });
-          //console.log(scooter)
+          if (currentstatus.status = "inactive") {
+            const scooter = await updateScooter(scooterId, { status: status });
+            //console.log(scooter)
+          }
+    
+          
+          if (scooter.designated_parking==false) {
+            startAmount = startAmount * 0.5
+          }
+    
+          // Start a new trip
+          const startLocation = {
+            type: "Point",
+            coordinates: [current_location.lon, current_location.lat],
+          };
+          const startTime = new Date();
+    
+          currentTrips[scooterId] = new Trip({
+            scooterId,
+            email,
+            startLocation,
+            startTime,
+            endLocation: null,
+            endTime: null,
+            duration: null,
+          });
+          await currentTrips[scooterId].save();
+          console.log(`Trip started and logged for scooter ${scooterId}`);
+          io.emit("statusChange", { scooterId, status});
+        } else if (data.type === "scooter") {
+          console.log("A scooter connected:", socket.id, data.scooterId);
         }
-  
-        
-        if (scooter.designated_parking==false) {
-          startAmount = startAmount * 0.5
-        }
-  
-        // Start a new trip
-        const startLocation = {
-          type: "Point",
-          coordinates: [current_location.lon, current_location.lat],
-        };
-        const startTime = new Date();
-  
-        currentTrips[scooterId] = new Trip({
-          scooterId,
-          email,
-          startLocation,
-          startTime,
-          endLocation: null,
-          endTime: null,
-          duration: null,
-        });
-        await currentTrips[scooterId].save();
-        console.log(`Trip started and logged for scooter ${scooterId}`);
-        io.emit("statusChange", { scooterId, status});
-
       } catch (err) {
         console.error("Error updating scooter status or log:", err);
       }
@@ -106,13 +110,18 @@ export const initializeSockets = (httpServer) => {
 
     socket.on("speedchange", ({ scooterId, speed }) => {
       console.log(`Scooter ${scooterId} speed updated to: ${speed}`);
-      updateScooter(scooterId, {speed:speed});
-
-      if (speed > 30) {
+    
+      if (parseFloat(speed) > 30) {
+        console.log(`High speed detected for scooter ${scooterId}. Emitting correction.`);
+    
+        // Debugging: Check which sockets are in the room
+        const room = io.sockets.adapter.rooms.get(scooterId);
+        console.log(`Sockets in room ${scooterId}:`, room ? [...room] : "No sockets in room");
+    
         io.to(scooterId).emit("receivechangingspeed", 30);
       }
     });
-
+    
     socket.on("charging", ({ scooterId }) => {
       console.log(`Scooter ${scooterId} is charging`);
       const status = 'charging';
@@ -121,10 +130,9 @@ export const initializeSockets = (httpServer) => {
 
     });
 
-    socket.on("batterychange", ({ scooterId, battery }) => {
+    socket.on("batterychange",async ({ scooterId, battery }) => {
       //console.log(`Scooter ${scooterId} battery updated to: ${battery}`);
-      updateScooter(scooterId, {battery_level:battery});;
-
+      await updateScooter(scooterId, {battery_level:battery});
       io.emit("receivechangingbattery", {scooterId, battery});
     });
 
@@ -198,7 +206,7 @@ export const initializeSockets = (httpServer) => {
           at_station: nearestStation ? nearestStation._id : null,
           designated_parking: Boolean(nearestStation),
         });
-        io.emit("tripEnded", { scooterId, cost});
+        io.to(scooterId).emit("tripEnded", { scooterId, cost});
         io.emit("statusChange", { scooterId, status});
         console.log(`Trip ended and logged for scooter ${scooterId}`);
       } catch (err) {
