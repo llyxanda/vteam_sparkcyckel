@@ -3,6 +3,82 @@ import Scooter from '../datamodels/scooter.mjs';
 import mongoose from 'mongoose';
 
 const dbUtils = {
+
+    /**
+     * Static station array.
+     */
+    stationArray: [
+            [
+                {
+                    name: "Stockholm Central",
+                    coordinates: [
+                        18.059196,  // Longitude.
+                        59.329323 // Latitude.
+                    ],
+                },
+                {
+                    name: "Södermalm Station",
+                    coordinates: [
+                        18.0649,
+                        59.317
+                    ],
+                },
+                {
+                    name: "Kungsholmen Hub",
+                    coordinates: [
+                        18.0359,
+                        59.3326
+                    ],
+                },
+            ],
+            [
+                {
+                    name: "Göteborg Central",
+                    coordinates: [
+                        11.9733,
+                        57.7089
+                    ],
+                },
+                {
+                    name: "Linnéplatsen Station",
+                    coordinates: [
+                        11.9497,
+                        57.6933
+                    ],
+                },
+                {
+                    name: "Hisingen Hub",
+                    coordinates: [
+                        11.9379,
+                        57.7274
+                    ],
+                },
+            ],
+            [
+            {
+                name: "Malmö Central",
+                coordinates: [
+                    13.0038,
+                    55.609
+                ],
+            },
+            {
+                name: "Västra Hamnen Station",
+                coordinates: [
+                    12.9852,
+                    55.6156
+                ],
+            },
+            {
+                name: "Triangeln Hub",
+                coordinates: [
+                    13.0031,
+                    55.5954 
+                ],
+            },
+        ],
+    ],
+
     /**
      * Creates <scootersToCreate> custom scooter IDs of <idLength> length.
      * @param {Number} scootersToCreate The number of scooters that should be created.
@@ -39,29 +115,7 @@ const dbUtils = {
     createScooterObjects: (customIdList) => {
         let documents = [];
         let document = {};
-        const stations = [
-            {
-                name: "Stockholm Central",
-                coordinates: [
-                    18.059196,
-                    59.329323
-                ],
-            },
-            {
-                name: "Göteborg Central",
-                coordinates: [
-                    11.9733,
-                    57.7089
-                ],
-            },
-            {
-                name: "Malmö Central",
-                coordinates: [
-                    13.0038, // Longitude.
-                    55.609 // Latitude.
-                ],
-            },
-        ];
+        const stations = dbUtils.stationArray;
 
         try {
             if (customIdList.length > 0) {
@@ -72,8 +126,9 @@ const dbUtils = {
                         cityIndex++;
                         cityThreshold += Math.floor((customIdList.length / 3));
                     }
-                    let lon = stations[cityIndex].coordinates[0] + ((Math.random() * 2 - 1) * 0.0001);
-                    let lat = stations[cityIndex].coordinates[1] + ((Math.random() * 2 - 1) * 0.0001);
+                    let randStation = Math.floor(Math.random() * 3);
+                    let lon = stations[cityIndex][randStation].coordinates[0] + ((Math.random() * 2 - 1) * 0.0001);
+                    let lat = stations[cityIndex][randStation].coordinates[1] + ((Math.random() * 2 - 1) * 0.0001);
                     document = {
                         customid: customId,
                         status: 'inactive',
@@ -85,10 +140,11 @@ const dbUtils = {
                                 lat
                             ],
                         },
-                        at_station: stations[cityIndex].name,
+                        at_station: stations[cityIndex][randStation].name,
                         designated_parking: true,
                     }
                     documents.push(document);
+                    console.log(document);
                 }
                 return documents;
             }
@@ -110,8 +166,8 @@ const dbUtils = {
         if (documents.length > 0) {
             try {
                 await database.connectMongoose();
-                await Scooter.deleteMany({}); // Remove existing scooters.
-                await Scooter.insertMany(documents);
+                // await Scooter.deleteMany({}); // Remove existing scooters.
+                // await Scooter.insertMany(documents);
                 console.log(documents);
                 console.log(`${documents.length} scooters were added to the database.`);
             } catch (error) {
@@ -120,7 +176,7 @@ const dbUtils = {
                 await mongoose.disconnect();
             }
         }
-    }
+    },
 }
 
 await dbUtils.insertScooterDocuments(3000, 7);
