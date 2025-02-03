@@ -13,12 +13,6 @@ build:
           - nvm install $NODE_VERSION
           - nvm use $NODE_VERSION
           - npm install
-      # tests:
-      #   override:
-      #     - npm test
-      #       coverage:
-      #         file: coverage/coverage.xml
-      #         format: clover
 
 filter:
     paths:
