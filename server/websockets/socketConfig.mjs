@@ -141,7 +141,7 @@ export const initializeSockets = (httpServer) => {
     });
 
     socket.on("endTrip", async ({ scooterId, current_location, avg_speed }) => {
-      console.log('End trip event')
+      console.log('End trip event', scooterId, current_location, avg_speed )
       try {
         const trip = currentTrips[scooterId];
         if (!trip) {
@@ -189,7 +189,7 @@ export const initializeSockets = (httpServer) => {
             nearestStation = station;
             break;
           } else {
-            console.log('Not in station')
+            //console.log('Not in station')
           }
         }
 
@@ -212,12 +212,14 @@ export const initializeSockets = (httpServer) => {
         await updateScooter(scooterId, {
           status: status,
           current_location: locationData,
+          battery_level: battery,
           at_station: nearestStation ? nearestStation._id : null,
           designated_parking: Boolean(nearestStation),
         });
         io.to(scooterId).emit("tripEnded", { scooterId, cost});
         io.emit("statusChange", { scooterId, status});
         console.log(`Trip ended and logged for scooter ${scooterId}`);
+        socket.leave(scooterId);
       } catch (err) {
         console.error("Error ending trip:", err);
       }
