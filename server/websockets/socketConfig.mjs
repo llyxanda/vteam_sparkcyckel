@@ -140,8 +140,9 @@ export const initializeSockets = (httpServer) => {
       io.emit("receivechangingbattery", {scooterId, battery});
     });
 
-    socket.on("endTrip", async ({ scooterId, current_location, avg_speed }) => {
-      console.log('End trip event', scooterId, current_location, avg_speed )
+    socket.on("endTrip", async ({ scooterId, email, current_location, avgSpeed }) => {
+      console.log('End trip event', scooterId, current_location, avgSpeed )
+      const avg_speed = avgSpeed;
       try {
         const trip = currentTrips[scooterId];
         if (!trip) {
@@ -212,7 +213,6 @@ export const initializeSockets = (httpServer) => {
         await updateScooter(scooterId, {
           status: status,
           current_location: locationData,
-          battery_level: battery,
           at_station: nearestStation ? nearestStation._id : null,
           designated_parking: Boolean(nearestStation),
         });
