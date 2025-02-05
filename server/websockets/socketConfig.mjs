@@ -40,6 +40,7 @@ export const initializeSockets = (httpServer) => {
     console.log("A user/scooter connected:", socket.id);
 
     socket.on("joinScooter", async (data) => {
+      console.log('parkAmount ', parkAmount)
       try {
         console.log("A user connected:", socket.id, data.scooterId, data.email);
         socket.join(data.scooterId);
@@ -195,7 +196,8 @@ export const initializeSockets = (httpServer) => {
         }
 
         if (!nearestStation) {
-          parkAmount *= 1.5;
+          console.log('Update park amount')
+          parkAmount = 20;
         }
     
         // Calculate total cost
