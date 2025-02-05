@@ -40,6 +40,7 @@ export const initializeSockets = (httpServer) => {
     console.log("A user/scooter connected:", socket.id);
 
     socket.on("joinScooter", async (data) => {
+      console.log('parkAmount ', parkAmount)
       try {
         console.log("A user connected:", socket.id, data.scooterId, data.email);
         socket.join(data.scooterId);
@@ -113,7 +114,7 @@ export const initializeSockets = (httpServer) => {
     });
 
     socket.on("speedchange", ({ scooterId, speed }) => {
-      console.log(`Scooter ${scooterId} speed updated to: ${speed}`);
+      console.log(`Scooter speedchange ${scooterId} speed updated to: ${speed}`);
     
       if (parseFloat(speed) > 30) {
         console.log(`High speed detected for scooter ${scooterId}. Emitting correction.`);
@@ -195,14 +196,15 @@ export const initializeSockets = (httpServer) => {
         }
 
         if (!nearestStation) {
-          parkAmount *= 1.5;
+          console.log('Update park amount')
+          parkAmount = 20;
         }
     
         // Calculate total cost
         const cost = startAmount + parkAmount + duration * 0.05;
-        console.log('Cost ', cost, startAmount, parkAmount)
+        console.log('Cost ', cost, startAmount, parkAmount, scooterId)
         console.log('Duration ', duration);
-        console.log(currentTrips[scooterId])
+        //console.log(currentTrips[scooterId])
         trip.cost=cost
     
         // Save trip and update scooter status
