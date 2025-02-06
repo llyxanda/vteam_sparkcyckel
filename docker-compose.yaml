@@ -1,20 +1,47 @@
 networks:
-  dbwebb:
+  scooti:
 
 services:
-  server:
-    image: davidallert/scooter-server:1.0
-    container_name: "scootersystemserver"
+  server_express:
+    image: davidallert/server_express:latest
+    container_name: "server_express"
     ports:
       - "8585:8585"
     networks:
-      dbwebb:
+      - scooti
+    restart:
+      always
+
+  server_simulation:
+    image: simulation # davidallert/server_simulation:latest # sara704/sim:01
+    container_name: "server_simulation"
+    ports:
+      - "8080:8080"
+    networks:
+      - scooti
     restart:
       "always"
-  client:
-    image: mobn23/scooters-system-client:1.0
-    container_name: "scootersystemclient"
+
+  client_public:
+    image: sara704/kund-app:last
+    container_name: "client_public"
+    ports:
+      - "3000:3000" # External -> Internal.
     networks:
-      dbwebb:
-    links:
-      - "server:scootersystemserver"
+      - scooti
+
+  client_scooter:
+    image: sara704/scooter-app:01
+    container_name: "client_scooter"
+    ports:
+      - "3001:3000" # External -> Internal.
+    networks:
+      - scooti
+
+  client_admin:
+    image: mobn23/frontend-admin:1.0
+    container_name: "client_admin"
+    ports:
+      - "3002:3001" # External -> Internal.
+    networks:
+      - scooti
