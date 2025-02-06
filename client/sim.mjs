@@ -1,7 +1,7 @@
 
 import puppeteer from 'puppeteer';
 
-const APP_URL = "http://localhost:3000";
+const APP_URL = "http://client_public:3000";
 const NUM_USERS = 10;
 
 // Random delay helper
@@ -92,7 +92,7 @@ const simulateScooterRide = async (page, context, id) => {
 
   // Open scooter tracking page in a new tab within the same browser context
   const trackingPage = await context.newPage();
-  await trackingPage.goto(`http://localhost:3001/${scooterId}`, { waitUntil: "networkidle2" });
+  await trackingPage.goto(`http://client_scooter:3001/${scooterId}`, { waitUntil: "networkidle2" });
   console.log(`User ${id}: Opened scooter tracking page`);
 
   // Switch back to main page to join scooter
