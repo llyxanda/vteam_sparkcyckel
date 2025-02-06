@@ -13,7 +13,7 @@ services:
       always
 
   server_simulation:
-    image: simulation # davidallert/server_simulation:latest # sara704/sim:01
+    image: sara704/sim:01 # davidallert/server_simulation:latest # sara704/sim:01
     container_name: "server_simulation"
     ports:
       - "8080:8080"
