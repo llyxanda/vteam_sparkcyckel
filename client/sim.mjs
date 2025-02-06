@@ -137,8 +137,8 @@ const simulateScooterRide = async (page, context, id) => {
 const simulateUserFlow = async (id, browser) => {
   const stations = [
     [18.059196, 59.329323],
-    //[18.0649, 59.3170],
-    //[18.0359, 59.3326],
+    [18.0649, 59.3170],
+    [18.0359, 59.3326],
     //[11.9733, 57.7089],
     //[11.9497, 57.6933],
     //[11.9379, 57.7274],
@@ -151,8 +151,8 @@ const simulateUserFlow = async (id, browser) => {
   const name = `User${id}`;
   const surname = `Surname${id}`;
   const context = await browser.createBrowserContext();
-  const page = await context.newPage();
   await context.overridePermissions(APP_URL, ['geolocation']);
+  const page = await context.newPage();
   const randomStation = stations[Math.floor(Math.random() * stations.length)];
   await page.setGeolocation({ latitude: randomStation[1], longitude: randomStation[0]});
   await randomDelay(10000, 18000);
@@ -175,7 +175,8 @@ const simulateUserFlow = async (id, browser) => {
 
 // Main function - Launches users asynchronously
 const main = async () => {
-  const browser = await puppeteer.launch({ headless: true, slowMo: 50, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
+  const browser = await puppeteer.launch({ headless: false, slowMo: 50, args: ['--no-sandbox', 
+    '--disable-setuid-sandbox' ] })
   console.log("Simulation started");
 
   const userSimulations = Array.from({ length: NUM_USERS }, (_, id) =>
