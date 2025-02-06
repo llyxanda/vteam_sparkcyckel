@@ -2,10 +2,11 @@ FROM node:latest
 
 WORKDIR /client
 
-# Install Chrome and dependencies
+# Install dependencies including curl and gnupg
 RUN apt-get update && apt-get install -y \
     wget \
-    gnupg \
+    curl \
+    gnupg2 \
     ca-certificates \
     libappindicator3-1 \
     libasound2 \
@@ -28,16 +29,17 @@ RUN apt-get update && apt-get install -y \
     libxss1 \
     libxtst6
 
-# Download and install Google Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
+# Add Google Chrome's repository and GPG key using curl and the new method
+RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | tee /etc/apt/trusted.gpg.d/google.asc \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/google.asc] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
     && apt-get install -y google-chrome-stable
 
+# Install npm dependencies
 COPY package*.json /client/
-
 RUN npm install
 
+# Copy the rest of the application files
 COPY . /client/
 
 # Set Puppeteer to use installed Chrome
