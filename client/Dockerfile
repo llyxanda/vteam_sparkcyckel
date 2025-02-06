@@ -4,6 +4,14 @@ RUN apt update && apt install -y curl jq iputils-ping
 
 WORKDIR /client
 
-COPY public ./public
+RUN apt update && apt install -y iputils-ping
 
-COPY src ./src
+COPY package*.json /client/
+
+RUN npm install
+
+COPY . /client/
+
+EXPOSE 8080
+
+CMD ["node", "sim.mjs"]
