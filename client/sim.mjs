@@ -157,8 +157,8 @@ const simulateUserFlow = async (id, browser) => {
   await page.setGeolocation({ latitude: randomStation[1], longitude: randomStation[0]});
   await randomDelay(10000, 18000);
   try {
-    //console.log(`User ${id}: Registering`);
-    //await register(page, email, password, name, surname);
+    console.log(`User ${id}: Registering`);
+    await register(page, email, password, name, surname);
     await login(page, email, password);
     await updateBalance(page, Math.random() * 50);
 
@@ -175,7 +175,7 @@ const simulateUserFlow = async (id, browser) => {
 
 // Main function - Launches users asynchronously
 const main = async () => {
-  const browser = await puppeteer.launch({ headless: true, slowMo: 50 });
+  const browser = await puppeteer.launch({ headless: true, slowMo: 50, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
   console.log("Simulation started");
 
   const userSimulations = Array.from({ length: NUM_USERS }, (_, id) =>
