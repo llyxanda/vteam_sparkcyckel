@@ -1,27 +1,22 @@
 FROM node
 
+# Set the working directory inside the container
 WORKDIR /server
 
+# Install necessary system packages (for example, iputils-ping)
 RUN apt update && apt install -y iputils-ping
 
+# Copy package*.json first to leverage Docker cache
 COPY package*.json /server/
 
-RUN npm init -y
+# Install dependencies from package.json (including geolib)
+RUN npm install
 
-RUN npm install express ejs
-
+# Copy the rest of the application code
 COPY . /server/
 
-# COPY config ./config
-
-# COPY routes ./routes
-
-# COPY views ./views
-
-# COPY app.mjs .
-
+# Expose port for the app
 EXPOSE 8585
 
-# CMD ["bash"]
-
+# Run the app using node
 CMD ["node", "app.mjs"]
