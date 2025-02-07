@@ -6,7 +6,7 @@ WORKDIR /server
 # Install necessary system packages (for example, iputils-ping)
 RUN apt update && apt install -y iputils-ping
 
-COPY ./package*.json /client/
+COPY ./package*.json /server/
 RUN npm install
 
 # Copy the rest of the application code
