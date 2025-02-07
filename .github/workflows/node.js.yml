@@ -28,14 +28,17 @@ jobs:
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
 
-    - run: npm install # Clean install.
-      working-directory: server
+    # Make sure 'npm install' runs from the 'server' folder
+    - run: npm install  # Clean install.
+      working-directory: server  # Make sure it's in the 'server' directory
 
+    # Run the build step inside the 'server' directory
     - run: npm run build --if-present
-      working-directory: server
+      working-directory: server  # Point to the 'server' directory
 
+    # Run tests in the 'server' directory
     - run: npm test
-      working-directory: server
+      working-directory: server  # Again, ensure it's in the 'server' directory
       env:
         JWTSECRET: ${{ secrets.JWTSECRET }}
         PORT: 8585
