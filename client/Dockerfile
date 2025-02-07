@@ -1,4 +1,4 @@
-FROM node:23
+FROM node
 
 WORKDIR /client
 USER root
@@ -38,8 +38,14 @@ RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | tee /etc/apt/
     && apt-get update \
     && apt-get install -y google-chrome-stable
 
-# Install npm dependencies
 COPY package*.json /client/
+RUN npm install
+
+# Clean npm cache to avoid potential issues
+RUN npm cache clean --force
+
+# Remove node_modules and reinstall dependencies
+RUN rm -rf node_modules
 RUN npm install
 
 # Copy the rest of the application files

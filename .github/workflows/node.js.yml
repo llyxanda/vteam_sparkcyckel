@@ -32,6 +32,9 @@ jobs:
     - run: npm install  # Clean install.
       working-directory: ./server  # Make sure it's in the 'server' directory
 
+    - run: npm install geolib # Clean install.
+      working-directory: ./server  # Make sure it's in the 'server' directory
+
     # Run the build step inside the 'server' directory
     - run: npm run build --if-present
       working-directory: ./server  # Point to the 'server' directory
