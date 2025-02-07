@@ -8,8 +8,6 @@ RUN apt update && apt install -y iputils-ping
 
 # Copy package*.json first to leverage Docker cache
 COPY package*.json /server/
-
-# Install dependencies from package.json (including geolib)
 RUN npm install
 
 # Copy the rest of the application code
