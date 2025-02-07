@@ -22,4 +22,5 @@ jobs:
       - name: Build and tag the Docker image
         run: |
           docker buildx build -t alexandraberi/simulation:latest -f ./client/Dockerfile ./client --push
+          docker buildx build -t alexandraberi/backend:latest -f ./server/Dockerfile ./server --push
 
