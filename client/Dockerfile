@@ -20,8 +20,16 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     fonts-liberation \
     xdg-utils \
-    wget
-
+    wget\
+    google-chrome-stable \
+    --no-install-recommends \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+# Add Google Chrome's repository and GPG key
+RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | tee /etc/apt/trusted.gpg.d/google.asc \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/google.asc] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable
 COPY package*.json ./
 RUN npm install
 
