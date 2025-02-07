@@ -8,7 +8,7 @@ RUN apt update && apt install -y iputils-ping
 
 
 COPY package*.json /server/
-RUN ls -l /server
+RUN echo "Listing files in /server after copy" && ls -l /server
 RUN npm install
 
 # Copy the rest of the application code
