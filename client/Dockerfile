@@ -21,7 +21,6 @@ RUN apt-get update && apt-get install -y \
     fonts-liberation \
     xdg-utils \
     wget\
-    google-chrome-stable \
     --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
