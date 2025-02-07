@@ -28,7 +28,7 @@ jobs:
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
 
-    - run: npm ci # Clean install.
+    - run: npm install # Clean install.
       working-directory: server
 
     - run: npm run build --if-present
