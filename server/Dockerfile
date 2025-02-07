@@ -6,8 +6,7 @@ WORKDIR /server
 # Install necessary system packages (for example, iputils-ping)
 RUN apt update && apt install -y iputils-ping
 
-# Copy package*.json first to leverage Docker cache
-COPY package*.json /server/
+COPY ./package*.json /client/
 RUN npm install
 
 # Copy the rest of the application code
