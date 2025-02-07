@@ -1,11 +1,8 @@
-FROM node:18
-
+FROM node:18 AS builder
 
 WORKDIR /client
 
-
 RUN apt-get update && apt-get install -y \
-    iputils-ping \
     libnss3 \
     libatk1.0-0 \
     libatk-bridge2.0-0 \
@@ -25,15 +22,17 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     wget
 
-
 COPY package*.json ./
-RUN rm -rf node_modules package-lock.json && npm install
+RUN npm install
 
+FROM node:18
 
+WORKDIR /client
+
+# Copy node_modules from the builder stage
+COPY --from=builder /client/node_modules ./node_modules
 COPY . .
 
-
 EXPOSE 8080
-
 
 CMD ["node", "sim.mjs"]
