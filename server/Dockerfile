@@ -14,6 +14,9 @@ RUN npm install
 # Copy the rest of the application code
 COPY . /server/
 
+
+ENV JWTSECRET="elscootervteam3"
+ENV OAUTHSECRET="elscootervteam3"
 # Expose port for the app
 EXPOSE 8585
 

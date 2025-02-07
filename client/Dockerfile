@@ -73,6 +73,7 @@ COPY --from=builder /client/node_modules ./node_modules
 # Copy the rest of your application files
 COPY . .
 
+
 EXPOSE 8080
 
 # Command to run the application
