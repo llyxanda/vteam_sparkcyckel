@@ -33,7 +33,8 @@ export const initializeSockets = (httpServer) => {
     cors: {
       origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002",
        "http://localhost:8080", "", "https://www.student.bth.se",
-       "http://client_admin:3002", "http://client_scooter:3001","http://client_public:3001"],
+       "http://client_admin:3002", "http://client_scooter:3001","http://client_public:3001"
+       ],
       methods: ["GET", "POST"],
     },
   });
