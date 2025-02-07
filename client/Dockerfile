@@ -3,7 +3,6 @@ FROM node
 WORKDIR /client
 USER root
 
-
 # Install dependencies including curl and gnupg
 RUN apt-get update && apt-get install -y \
     wget \
@@ -31,8 +30,7 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     --no-install-recommends
 
-
-# Add Google Chrome's repository and GPG key using curl and the new method
+# Add Google Chrome's repository and GPG key
 RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | tee /etc/apt/trusted.gpg.d/google.asc \
     && echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/google.asc] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
@@ -53,10 +51,10 @@ COPY . /client/
 
 # Set Puppeteer to use installed Chrome
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
-
-# Make sure Chrome runs in headless mode and with no sandboxing (for Docker)
-ENV CHROME_PATH=/usr/bin/google-chrome-stable
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+# Set default flags for Chrome to run in headless mode and disable sandboxing
+ENV CHROME_FLAGS="--no-sandbox --disable-setuid-sandbox --headless"
 
 # Expose port
 EXPOSE 8080
