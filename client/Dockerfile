@@ -1,63 +1,39 @@
 FROM node
 
-WORKDIR /client
-USER root
 
-# Install dependencies including curl and gnupg
+WORKDIR /client
+
+
 RUN apt-get update && apt-get install -y \
-    wget \
-    ca-certificates \
-    fonts-liberation \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libgdk-pixbuf2.0-0 \
-    libnspr4 \
+    iputils-ping \
     libnss3 \
-    libx11-xcb1 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libdrm2 \
+    libxkbcommon-x11-0 \
     libxcomposite1 \
     libxdamage1 \
     libxrandr2 \
     libgbm1 \
-    libu2f-udev \
+    libasound2 \
     libpango-1.0-0 \
     libpangocairo-1.0-0 \
-    libwayland-client0 \
-    libwayland-server0 \
+    libxshmfence1 \
+    ca-certificates \
+    fonts-liberation \
     xdg-utils \
-    --no-install-recommends
+    wget
 
-# Add Google Chrome's repository and GPG key
-RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | tee /etc/apt/trusted.gpg.d/google.asc \
-    && echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/google.asc] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable
 
-COPY package*.json /client/
-RUN npm install
+COPY package*.json ./
+RUN rm -rf node_modules package-lock.json && npm install
 
-# Clean npm cache to avoid potential issues
-RUN npm cache clean --force
 
-# Remove node_modules and reinstall dependencies
-RUN rm -rf node_modules
-RUN npm install
+COPY . .
 
-# Copy the rest of the application files
-COPY . /client/
 
-# Set Puppeteer to use installed Chrome
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-
-# Set default flags for Chrome to run in headless mode and disable sandboxing
-ENV CHROME_FLAGS="--no-sandbox --disable-setuid-sandbox --headless"
-
-# Expose port
 EXPOSE 8080
 
-# Set the default command to run the simulation script
+
 CMD ["node", "sim.mjs"]
