@@ -175,7 +175,7 @@ const simulateUserFlow = async (id, browser) => {
 
 // Main function - Launches users asynchronously
 const main = async () => {
-  const browser = await puppeteer.launch({ headless: true, slowMo: 50, args: ['--no-sandbox', 
+  const browser = await puppeteer.launch({executablePath: '/usr/bin/google-chrome-stable', headless: true, slowMo: 50, args: ['--no-sandbox', 
     '--disable-setuid-sandbox' ] })
   console.log("Simulation started");
 
